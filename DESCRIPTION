@@ -1,8 +1,12 @@
 Package: analysis.pack
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0-1
-Author: Who wrote it
+Version: 0.1.0-2
+Authors@R: person("Francois",
+           "Collin",
+           email = "francois.collin@ucb.com",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0524-5755"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
@@ -10,3 +14,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
+Imports: 
+    dplyr,
+    tidyr
