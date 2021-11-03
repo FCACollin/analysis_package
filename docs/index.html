@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">analysis.pack</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0-3</span>
       </span>
     </div>
 
@@ -60,8 +60,364 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+<div id="study-1" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#study-1" class="anchor"></a>Study 1</h1></div>
+<p>FCollin 03 Nov 2021</p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">file_nm</span> <span class="op">&lt;-</span> <span class="st">"inst/rcode/study.R"</span>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/read_chunk.html">read_chunk</a></span><span class="op">(</span><span class="va">file_nm</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="st">"R code chunks read from:\n"</span>, <span class="va">file_nm</span><span class="op">)</span>
+<span class="co">#&gt; R code chunks read from:</span>
+<span class="co">#&gt; inst/rcode/study.R</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; ℹ Loading analysis.pack</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'dplyr'</span>
+<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     filter, lag</span>
+<span class="co">#&gt; The following objects are masked from 'package:base':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/prepare_adam_pasi.html">prepare_adam_pasi</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/attach.html">attach</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="co"># Analysis dataset</span>
+<span class="va">ads</span> <span class="op">&lt;-</span> <span class="va">adsl</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">USUBJID</span>, <span class="va">ARMCD</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">adpasi</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PASITOT"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>
+    subj <span class="op">=</span> <span class="va">USUBJID</span>,
+    pasi <span class="op">=</span> <span class="va">AVAL</span>,
+    grp <span class="op">=</span> <span class="va">ARMCD</span>,
+    week <span class="op">=</span> <span class="va">AVISIT</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+    time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"^WEEK(.*)$"</span>, <span class="va">week</span>, replacement <span class="op">=</span> <span class="st">"\\1"</span><span class="op">)</span>,
+    time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">subj</span>, <span class="va">grp</span>, <span class="va">week</span>, <span class="va">pasi</span>, <span class="va">time</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">subj</span>, <span class="va">time</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Joining, by = "USUBJID"</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ads</span>
+<span class="co">#&gt; # A tibble: 8,100 × 5</span>
+<span class="co">#&gt;    subj        grp   week    pasi  time</span>
+<span class="co">#&gt;    &lt;chr&gt;       &lt;fct&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 SUBJECT 001 ARM B WEEK00  27       0</span>
+<span class="co">#&gt;  2 SUBJECT 001 ARM B WEEK01  22.5     1</span>
+<span class="co">#&gt;  3 SUBJECT 001 ARM B WEEK04  18.2     4</span>
+<span class="co">#&gt;  4 SUBJECT 001 ARM B WEEK08   8.8     8</span>
+<span class="co">#&gt;  5 SUBJECT 001 ARM B WEEK16   4.2    16</span>
+<span class="co">#&gt;  6 SUBJECT 001 ARM B WEEK24   1      24</span>
+<span class="co">#&gt;  7 SUBJECT 001 ARM B WEEK32   0      32</span>
+<span class="co">#&gt;  8 SUBJECT 001 ARM B WEEK40   0      40</span>
+<span class="co">#&gt;  9 SUBJECT 001 ARM B WEEK52   0      52</span>
+<span class="co">#&gt; 10 SUBJECT 002 ARM B WEEK00  23.2     0</span>
+<span class="co">#&gt; # … with 8,090 more rows</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Last Observation Carried Forward, adapated from `zoo::na.locf`.</span>
+<span class="va">locf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">{</span>
+
+  <span class="va">ok</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="va">ok</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="va">ok</span><span class="op">)</span>
+  <span class="va">gaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ok</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span>, <span class="va">gaps</span><span class="op">)</span>
+
+<span class="op">}</span>
+
+<span class="co"># Next Observation Carried Backward derived from locf.</span>
+<span class="va">nocb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu">locf</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">apply_ifany</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">cond</span>, <span class="va">fun</span> <span class="op">=</span> <span class="va">min</span>, <span class="va">otherwise</span> <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">cond</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">fun</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">cond</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw">else</span> <span class="va">otherwise</span>
+<span class="op">}</span>
+
+<span class="va">pasi_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span>
+    <span class="va">x</span>,
+    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="cn">Inf</span><span class="op">)</span>,
+    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PASI = 0"</span>, <span class="st">"PASI &lt;= 2"</span>, <span class="st">"PASI &lt;= 3"</span>, <span class="st">"PASI &gt; 3"</span><span class="op">)</span>,
+    include.lowest <span class="op">=</span> <span class="cn">TRUE</span>
+  <span class="op">)</span>
+  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">y</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>, <span class="st">"Lost Response"</span>, <span class="st">"Missing"</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">y</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Missing"</span>
+  <span class="va">y</span>
+<span class="op">}</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">theme_spin</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>
+      text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>,
+      title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
+    <span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">StatStepArea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggproto.html">ggproto</a></span><span class="op">(</span><span class="co"># nolint - ggplot syntax</span>
+  <span class="st">"StatStepArea"</span>, <span class="va">Stat</span>,
+  compute_group <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">scales</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>, <span class="op">]</span>
+    <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
+    <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">&lt;=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+      <span class="co"># Need at least one observation</span>
+      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">data</span><span class="op">[</span><span class="fl">0</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span>
+    <span class="op">}</span>
+    <span class="va">ys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">2</span> <span class="op">*</span> <span class="va">n</span><span class="op">]</span>
+    <span class="va">xs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="va">n</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>
+    <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>
+    <span class="va">data_attr</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">xs</span>, <span class="op">]</span>
+    <span class="va">data_attr</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span>
+    <span class="va">data_attr</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">y</span>
+    <span class="va">data_attr</span><span class="op">$</span><span class="va">ymin</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+    <span class="va">data_attr</span><span class="op">$</span><span class="va">ymax</span> <span class="op">&lt;-</span> <span class="va">y</span>
+    <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">data_attr</span>
+    <span class="va">y</span>
+  <span class="op">}</span>,
+  required_aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">stat_steparea</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mapping</span> <span class="op">=</span> <span class="cn">NULL</span>,
+                          <span class="va">data</span> <span class="op">=</span> <span class="cn">NULL</span>,
+                          <span class="va">geom</span> <span class="op">=</span> <span class="st">"area"</span>,
+                          <span class="va">position</span> <span class="op">=</span> <span class="st">"identity"</span>,
+                          <span class="va">na_rm</span> <span class="op">=</span> <span class="cn">FALSE</span>,
+                          <span class="va">show_legend</span> <span class="op">=</span> <span class="cn">NA</span>,
+                          <span class="va">inherit_aes</span> <span class="op">=</span> <span class="cn">TRUE</span>,
+                          <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/layer.html">layer</a></span><span class="op">(</span>
+    stat <span class="op">=</span> <span class="va">StatStepArea</span>, data <span class="op">=</span> <span class="va">data</span>, mapping <span class="op">=</span> <span class="va">mapping</span>, geom <span class="op">=</span> <span class="va">geom</span>,
+    position <span class="op">=</span> <span class="va">position</span>, show.legend <span class="op">=</span> <span class="va">show_legend</span>, inherit.aes <span class="op">=</span> <span class="va">inherit_aes</span>,
+    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>na.rm <span class="op">=</span> <span class="va">na_rm</span>, <span class="va">...</span><span class="op">)</span>
+  <span class="op">)</span>
+<span class="op">}</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ads</span> <span class="op">&lt;-</span> <span class="va">ads</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">subj</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+    rsp <span class="op">=</span> <span class="fu">nocb</span><span class="op">(</span><span class="va">pasi</span><span class="op">)</span>,
+    nocbfl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">pasi</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">rsp</span><span class="op">)</span>,
+    <span class="co"># PASI Categories</span>
+    pasic <span class="op">=</span> <span class="fu">pasi_fun</span><span class="op">(</span><span class="va">rsp</span><span class="op">)</span>,
+    <span class="co"># First time lower than pasi &lt;= 2</span>
+    crsp_onset <span class="op">=</span> <span class="fu">apply_ifany</span><span class="op">(</span><span class="va">time</span>, <span class="va">rsp</span> <span class="op">&lt;=</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">rsp</span><span class="op">)</span><span class="op">)</span>,
+    <span class="co"># First wk after wk onset when pasi &gt; 2</span>
+    crsp_end <span class="op">=</span> <span class="fu">apply_ifany</span><span class="op">(</span><span class="va">time</span>, <span class="va">rsp</span> <span class="op">&gt;</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">rsp</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">time</span> <span class="op">&gt;</span> <span class="va">crsp_onset</span><span class="op">)</span>,
+    rsp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">time</span> <span class="op">&gt;=</span> <span class="va">crsp_end</span>, <span class="st">"Lost Response"</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">pasic</span><span class="op">)</span><span class="op">)</span>,
+      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">pasic</span><span class="op">)</span>
+    <span class="op">)</span>,
+    subset <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">crsp_onset</span> <span class="op">==</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Never\nresponder"</span>,
+      <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="cn">Inf</span> <span class="op">&amp;</span> <span class="va">crsp_end</span> <span class="op">&gt;</span> <span class="fl">52</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Continuous\nresponder"</span>,
+      <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="cn">Inf</span> <span class="op">&amp;</span> <span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Non-sustained\nresponder"</span>
+    <span class="op">)</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>subj <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">subj</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">subj</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span> <span class="op">*</span> <span class="va">crsp_onset</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ads</span>
+<span class="co">#&gt; # A tibble: 8,100 × 11</span>
+<span class="co">#&gt;    subj   grp   week   pasi  time rsp   nocbfl pasic crsp_onset crsp_end subset </span>
+<span class="co">#&gt;    &lt;fct&gt;  &lt;fct&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;lgl&gt;  &lt;fct&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;  </span>
+<span class="co">#&gt;  1 SUBJE… ARM B WEEK…  27       0 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  2 SUBJE… ARM B WEEK…  22.5     1 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  3 SUBJE… ARM B WEEK…  18.2     4 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  4 SUBJE… ARM B WEEK…   8.8     8 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  5 SUBJE… ARM B WEEK…   4.2    16 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  6 SUBJE… ARM B WEEK…   1      24 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  7 SUBJE… ARM B WEEK…   0      32 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  8 SUBJE… ARM B WEEK…   0      40 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt;  9 SUBJE… ARM B WEEK…   0      52 PASI… FALSE  PASI…         24      Inf "Conti…</span>
+<span class="co">#&gt; 10 SUBJE… ARM B WEEK…  23.2     0 PASI… FALSE  PASI…         16      Inf "Conti…</span>
+<span class="co">#&gt; # … with 8,090 more rows</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span>
+
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ads</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">subj</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>wk_last <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">time</span><span class="op">[</span><span class="va">rsp</span> <span class="op">!=</span> <span class="st">"Missing"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">subj</span>, <span class="va">crsp_onset</span>, <span class="va">wk_last</span>, <span class="va">crsp_end</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+    km_rsp_1 <span class="op">=</span> <span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="cn">Inf</span>,
+    time_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="va">wk_last</span>, <span class="va">crsp_onset</span>, <span class="va">wk_last</span><span class="op">)</span>,
+    km_rsp_2 <span class="op">=</span> <span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="cn">Inf</span>,
+    time_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="va">wk_last</span>, <span class="va">crsp_end</span>, <span class="va">wk_last</span><span class="op">)</span> <span class="op">-</span> <span class="va">crsp_onset</span>
+  <span class="op">)</span>
+
+<span class="va">data</span>
+<span class="co">#&gt; # A tibble: 900 × 8</span>
+<span class="co">#&gt;    subj        crsp_onset crsp_end wk_last km_rsp_1 time_1 km_rsp_2 time_2</span>
+<span class="co">#&gt;    &lt;fct&gt;            &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 SUBJECT 001         24      Inf      52 TRUE         24 FALSE        28</span>
+<span class="co">#&gt;  2 SUBJECT 002         16      Inf      52 TRUE         16 FALSE        36</span>
+<span class="co">#&gt;  3 SUBJECT 003        Inf      Inf      16 FALSE        16 FALSE      -Inf</span>
+<span class="co">#&gt;  4 SUBJECT 004          4      Inf      52 TRUE          4 FALSE        48</span>
+<span class="co">#&gt;  5 SUBJECT 005         32      Inf      52 TRUE         32 FALSE        20</span>
+<span class="co">#&gt;  6 SUBJECT 006         24      Inf      52 TRUE         24 FALSE        28</span>
+<span class="co">#&gt;  7 SUBJECT 007          8      Inf      52 TRUE          8 FALSE        44</span>
+<span class="co">#&gt;  8 SUBJECT 008          8      Inf      52 TRUE          8 FALSE        44</span>
+<span class="co">#&gt;  9 SUBJECT 009          4      Inf      52 TRUE          4 FALSE        48</span>
+<span class="co">#&gt; 10 SUBJECT 010         16      Inf      52 TRUE         16 FALSE        36</span>
+<span class="co">#&gt; # … with 890 more rows</span>
+
+<span class="va">surv_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time_1</span>, <span class="va">km_rsp_1</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>
+<span class="va">dta_gg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span>
+  <span class="va">surv_mod</span>, time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">ads</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>
+<span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"n.censor"</span>, <span class="st">"surv"</span><span class="op">)</span><span class="op">]</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>y <span class="op">=</span>  <span class="fl">1</span> <span class="op">-</span> <span class="va">surv</span><span class="op">)</span>
+
+<span class="va">dta_gg</span>
+<span class="co">#&gt; # A tibble: 9 × 4</span>
+<span class="co">#&gt;    time n.censor   surv      y</span>
+<span class="co">#&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;</span>
+<span class="co">#&gt; 1     0        0 1      0     </span>
+<span class="co">#&gt; 2     1        1 0.95   0.0500</span>
+<span class="co">#&gt; 3     4        1 0.741  0.259 </span>
+<span class="co">#&gt; 4     8        3 0.536  0.464 </span>
+<span class="co">#&gt; 5    16        3 0.333  0.667 </span>
+<span class="co">#&gt; 6    24        4 0.208  0.792 </span>
+<span class="co">#&gt; 7    32        5 0.146  0.854 </span>
+<span class="co">#&gt; 8    40        0 0.0964 0.904 </span>
+<span class="co">#&gt; 9    52       66 0.0796 0.920</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gg1</span> <span class="op">&lt;-</span> <span class="va">dta_gg</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_step</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"green4"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">stat_steparea</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"green4"</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">16</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>
+    title <span class="op">=</span> <span class="st">"When?"</span>,
+    subtitle <span class="op">=</span> <span class="st">"Probability for a response onset"</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_spin</span><span class="op">(</span>
+    axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">gg1</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_a1-1.svg" width="100%"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gg2</span> <span class="op">&lt;-</span> <span class="va">dta_gg</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">n.censor</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">16</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Response onset week"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>
+    subtitle <span class="op">=</span>
+      <span class="st">"Censoring: freq. of never-responders during participation to the study"</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_spin</span><span class="op">(</span>
+    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,
+    axis.title.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">gg2</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_a2-1.svg" width="100%"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">surv_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time_2</span>, <span class="va">km_rsp_2</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">km_rsp_1</span>, <span class="op">]</span><span class="op">)</span>
+<span class="va">dta_gg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span>
+  <span class="va">surv_mod</span>, time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">ads</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>
+<span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"n.censor"</span>, <span class="st">"surv"</span><span class="op">)</span><span class="op">]</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">surv</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gg3</span> <span class="op">&lt;-</span> <span class="va">dta_gg</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_step</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"green4"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">stat_steparea</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"green4"</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">16</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>
+    title <span class="op">=</span> <span class="st">"How long?"</span>,
+    subtitle <span class="op">=</span> <span class="st">"Probability of maintained response since onset"</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_spin</span><span class="op">(</span>
+    axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">gg3</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_b1-1.svg" width="100%"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gg4</span> <span class="op">&lt;-</span> <span class="va">dta_gg</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">n.censor</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">16</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span>, <span class="fl">250</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Weeks of sustained response"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>
+    subtitle <span class="op">=</span> <span class="st">"Censoring: freq. of still responders at last available obs"</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_spin</span><span class="op">(</span>
+    plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,
+    axis.title.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">gg4</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_b2-1.svg" width="100%"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ads</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">subj</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>wk_last <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">week</span><span class="op">[</span><span class="va">rsp</span> <span class="op">!=</span> <span class="st">"Missing"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">subj</span>, <span class="va">crsp_onset</span>, <span class="va">wk_last</span>, <span class="va">crsp_end</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+    km_rsp_1 <span class="op">=</span> <span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="cn">Inf</span>,
+    time_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">crsp_onset</span> <span class="op">&lt;</span> <span class="va">wk_last</span>, <span class="va">crsp_onset</span>, <span class="va">wk_last</span><span class="op">)</span>,
+    km_rsp_2 <span class="op">=</span> <span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="cn">Inf</span>,
+    time_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="va">wk_last</span>, <span class="va">crsp_end</span>, <span class="va">wk_last</span><span class="op">)</span> <span class="op">-</span> <span class="va">crsp_onset</span>,
+    duration <span class="op">=</span> <span class="va">time_2</span>
+  <span class="op">)</span>
+
+<span class="va">gg5</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">duration</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">crsp_end</span> <span class="op">&lt;</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>censored <span class="op">=</span> <span class="va">crsp_end</span> <span class="op">==</span> <span class="cn">Inf</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">crsp_onset</span>, y <span class="op">=</span> <span class="va">duration</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>group <span class="op">=</span> <span class="va">crsp_onset</span><span class="op">)</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">16</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Response onset week"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Weeks of sustained\nresponse"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Non-sustained responders: Onset vs Duration"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_spin</span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">gg5</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_c-1.svg" width="100%"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gg</span> <span class="op">&lt;-</span> <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cowplot/man/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+  <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cowplot/man/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+    <span class="va">gg1</span>, <span class="va">gg3</span>, <span class="va">gg2</span>, <span class="va">gg4</span>,
+    align <span class="op">=</span> <span class="st">"v"</span>,
+    ncol <span class="op">=</span> <span class="fl">2</span>,
+    rel_heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1.5</span><span class="op">)</span>,
+    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>
+  <span class="op">)</span>,
+  <span class="va">gg5</span>,
+  ncol <span class="op">=</span> <span class="fl">1</span>,
+  rel_heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"C"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">gg</span>
+<span class="co">#&gt; Warning: Removed 1 rows containing missing values (geom_text).</span></code></pre></div>
+<p><img src="reference/figures/README-surv_01_combination-1.svg" width="100%"></p>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

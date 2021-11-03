@@ -1,0 +1,70 @@
+---
+title: "Study 1"
+author: "FCollin"
+date: "`r format(Sys.Date(), '%d %b %Y')`"
+output:
+  github_document:
+    html_preview: true
+    keep_html: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dev = "svg"
+)
+```
+
+```{r setup}
+file_nm <- "inst/rcode/study.R"
+knitr::read_chunk(file_nm)
+message("R code chunks read from:\n", file_nm)
+```
+
+```{r, study_settings}
+```
+
+```{r, study_ads}
+```
+
+```{r, study_ads_outlook}
+```
+
+```{r, study_helper_functions}
+```
+
+```{r, helper_functions_ggplot}
+```
+
+```{r, study_response_description}
+```
+
+```{r, study_ads_outlook}
+```
+
+```{r, km_estimator_endpoint_01}
+```
+
+```{r, surv_01_a1, fig.height=3, fig.width = 4}
+```
+
+```{r, surv_01_a2, fig.height=1, fig.width = 4}
+```
+
+```{r, km_estimator_endpoint_02}
+```
+
+```{r, surv_01_b1, fig.height=3, fig.width = 4}
+```
+
+```{r, surv_01_b2, fig.height=1, fig.width = 4}
+```
+
+```{r, surv_01_c, fig.height=3, fig.width = 4}
+```
+
+```{r, surv_01_combination}
+```
